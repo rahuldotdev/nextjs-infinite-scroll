@@ -11,17 +11,18 @@ export const getPosts = async (
 ): Promise<Post[]> => {
   const url = getApiUrl(offset, limit);
 
+  let response: Response;
+
   try {
-    const response = await fetch(url);
-    const data = (await response.json()) as Post[];
-
-    if (!response.ok) {
-      throw await handleError(response);
-    }
-
-    return data;
+    response = await fetch(url);
   } catch (error: unknown) {
     console.error(error);
-    throw new Error(`An error happened: ${error}`);
+    throw new Error(`Network request failed: ${error}`);
   }
+
+  if (!response.ok) {
+    throw await handleError(response);
+  }
+
+  return response.json() as Promise<Post[]>;
 };
